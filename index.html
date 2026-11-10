@@ -216,6 +216,7 @@ function tab(n){
 $("t1").onclick=function(){tab(1)};$("t2").onclick=function(){tab(2)};
 $("prev").onclick=function(){go(cur-1)};$("next").onclick=function(){go(cur+1)};
 buildTrack();render();fillSel();
+if(location.hash==="#testes"){var ts=document.createElement("script");ts.src="testes.js";document.body.appendChild(ts)}
 </script>
 </body>
 </html>
