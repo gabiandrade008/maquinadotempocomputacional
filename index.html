@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Máquina do tempo computacional</title>
+<style>
+:root{
+  --bg:#f2f5fa;--surface:#ffffff;--ink:#16213a;--muted:#5a6683;--line:#d5dcea;
+  --accent:#3445c4;--accent-ink:#ffffff;--hist:#13785a;--hist-bg:#dff3ea;--est:#9a5b00;--est-bg:#fdeccf;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0f1526;--surface:#18203a;--ink:#e8ecf8;--muted:#9aa6c6;--line:#2c3759;
+  --accent:#8c9bff;--accent-ink:#0f1526;--hist:#6fd6ae;--hist-bg:#173a31;--est:#f3b861;--est-bg:#40300f}
+}
+:root[data-theme="dark"]{--bg:#0f1526;--surface:#18203a;--ink:#e8ecf8;--muted:#9aa6c6;--line:#2c3759;
+  --accent:#8c9bff;--accent-ink:#0f1526;--hist:#6fd6ae;--hist-bg:#173a31;--est:#f3b861;--est-bg:#40300f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:920px;margin:0 auto;padding:28px 18px 56px}
+h1{font:700 clamp(30px,6vw,48px)/1.05 Georgia,"Iowan Old Style","Times New Roman",serif;margin:0 0 8px;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0 0 22px;max-width:60ch}
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+button{font:inherit;color:inherit;cursor:pointer}
+.tab{padding:8px 16px;border:1px solid var(--line);background:var(--surface);border-radius:999px}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:14px;color:var(--muted);margin:0 0 18px}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap;vertical-align:middle}
+.tag.h{background:var(--hist-bg);color:var(--hist)}
+.tag.e{background:var(--est-bg);color:var(--est)}
+.track{position:relative;height:96px;margin:6px 8px 20px}
+.track::before{content:"";position:absolute;left:0;right:0;top:30px;height:3px;background:var(--line);border-radius:2px}
+.mk{position:absolute;top:0;transform:translateX(-50%);background:none;border:0;padding:0;text-align:center;width:92px}
+.dot{display:block;width:26px;height:26px;margin:17px auto 6px;border-radius:50%;background:var(--surface);border:3px solid var(--line);transition:all .2s}
+.mk[aria-pressed="true"] .dot{background:var(--accent);border-color:var(--accent);transform:scale(1.3)}
+.mk b{display:block;font-size:13px;line-height:1.2}
+.mk span.y{display:block;font-size:12px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card h2{font:700 28px/1.15 Georgia,"Iowan Old Style",serif;margin:0}
+.sub{color:var(--muted);margin:4px 0 16px}
+dl{margin:0;display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:0 18px}
+dt{font-weight:600;padding:10px 0;border-top:1px solid var(--line)}
+dd{margin:0;padding:10px 0;border-top:1px solid var(--line)}
+.nav{display:flex;justify-content:space-between;margin-top:16px;gap:10px}
+.btn{padding:8px 14px;border:1px solid var(--line);background:var(--surface);border-radius:8px}
+.btn[disabled]{opacity:.4;cursor:default}
+.pick{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+select{font:inherit;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th,td{text-align:left;padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
+th{font-weight:600}
+thead th{border-top:0;font-family:Georgia,serif;font-size:18px}
+.src{margin-top:26px;font-size:14px;color:var(--muted)}
+.src h3{font-size:15px;color:var(--ink);margin:0 0 6px}
+.src ul{margin:0;padding-left:20px}
+[hidden]{display:none!important}
+@media (max-width:560px){dl{grid-template-columns:1fr}dt{border-bottom:0;padding-bottom:0}dd{border-top:0;padding-top:2px}.mk{width:64px}.mk b{font-size:11px}}
+@media (prefers-reduced-motion:reduce){.dot{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>Máquina do tempo computacional</h1>
+<p class="lead">Viaje pelas cinco gerações de computadores e compare como mudaram o componente principal, a velocidade, a memória e o porte das máquinas.</p>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="t1" aria-selected="true">Explorar</button>
+  <button class="tab" role="tab" id="t2" aria-selected="false">Comparar</button>
+</div>
+
+<p class="legend">
+  <span><span class="tag h">Dado histórico</span> registrado em fontes</span>
+  <span><span class="tag e">Estimativa</span> ordem de grandeza ou convenção</span>
+</p>
+
+<section id="explore">
+  <div class="track" id="track"></div>
+  <article class="card" id="card" aria-live="polite"></article>
+  <div class="nav">
+    <button class="btn" id="prev">Geração anterior</button>
+    <button class="btn" id="next">Próxima geração</button>
+  </div>
+</section>
+
+<section id="compare" hidden>
+  <div class="pick">
+    <label>Geração A <select id="selA"></select></label>
+    <label>Geração B <select id="selB"></select></label>
+  </div>
+  <div class="card scroll"><table id="tbl"></table></div>
+</section>
+
+<div class="src">
+  <h3>Fontes para conferir os dados</h3>
+  <ul>
+    <li>Computer History Museum (computerhistory.org): ENIAC, UNIVAC I, IBM 7090, IBM System/360 e Intel 4004.</li>
+    <li>STALLINGS, W. <i>Arquitetura e organização de computadores</i>.</li>
+    <li>TANENBAUM, A. S. <i>Organização estruturada de computadores</i>.</li>
+  </ul>
+</div>
+</main>
+
+<script>
+var L=["Componente principal","Velocidade","Memória","Armazenamento","Porte","Programação","Período"];
+var G=[
+{n:"1ª geração",y:"1940–1956",s:1940,t:"Válvulas a vácuo",m:"ENIAC (1946)",f:[
+["Válvulas a vácuo; o ENIAC tinha cerca de 17 mil","h"],
+["Cerca de 5.000 somas por segundo (ENIAC)","h"],
+["Sem memória de programa no ENIAC; o UNIVAC I (1951) usava linhas de retardo de mercúrio","h"],
+["Cartões perfurados e fita magnética (UNIVAC I)","h"],
+["Ocupava uma sala inteira: cerca de 30 toneladas e 150 kW","h"],
+["Linguagem de máquina e religação manual de cabos","h"],
+["Convenção dos livros; as datas variam entre autores","e"]]},
+{n:"2ª geração",y:"1956–1963",s:1956,t:"Transistores",m:"IBM 7090 (1959)",f:[
+["Transistores discretos, inventados em 1947 nos Laboratórios Bell","h"],
+["Centenas de milhares de instruções por segundo","e"],
+["Núcleos magnéticos; o IBM 7090 tinha 32 mil palavras de 36 bits","h"],
+["Fitas magnéticas e discos (IBM 305 RAMAC, 1956, cerca de 5 MB)","h"],
+["Mais compactos, frios e confiáveis que as válvulas, mas ainda do tamanho de salas","h"],
+["Assembly e linguagens de alto nível: FORTRAN (1957) e COBOL (1959)","h"],
+["Convenção dos livros; as datas variam entre autores","e"]]},
+{n:"3ª geração",y:"1964–1971",s:1964,t:"Circuitos integrados",m:"IBM System/360 (1964)",f:[
+["Circuitos integrados: vários transistores em um único chip","h"],
+["Da ordem de 1 milhão de instruções por segundo nos modelos maiores","e"],
+["Núcleo magnético; a memória semicondutora surge no fim do período","h"],
+["Discos magnéticos removíveis e fitas","h"],
+["Mainframes e minicomputadores, menores que os da geração anterior","e"],
+["Sistemas operacionais com multiprogramação e uma família de máquinas compatíveis (System/360)","h"],
+["Convenção dos livros; as datas variam entre autores","e"]]},
+{n:"4ª geração",y:"1971–anos 1990",s:1971,t:"Microprocessadores",m:"Intel 4004 (1971)",f:[
+["Processador em um único chip: o Intel 4004 tinha 2.300 transistores, 4 bits e 740 kHz","h"],
+["De 740 kHz (4004) a vários GHz nos processadores atuais","h"],
+["RAM semicondutora (DRAM e SRAM): de KB nos primeiros micros a GB","h"],
+["Disquetes, discos rígidos e, depois, SSDs","h"],
+["Computador pessoal na mesa, depois notebooks e celulares","h"],
+["Linguagens de alto nível, interfaces gráficas, redes e Internet","h"],
+["Convenção dos livros; o fim do período é impreciso","e"]]},
+{n:"5ª geração",y:"1980 em diante",s:1982,t:"Chips massivamente paralelos e IA",m:"Apple M1 (2020)",f:[
+["Chips com bilhões de transistores, vários núcleos e GPUs; o Apple M1 tem cerca de 16 bilhões","h"],
+["Paralelismo massivo; supercomputadores já ultrapassam 1 exaflop (10¹⁸ operações por segundo)","h"],
+["Hierarquia de caches e memórias de alta largura de banda","h"],
+["SSDs NVMe e armazenamento em nuvem","h"],
+["Do datacenter ao relógio de pulso","h"],
+["Inteligência artificial e aprendizado de máquina; computação quântica ainda experimental","e"],
+["Projeto japonês de 5ª geração (1982); a classificação varia entre autores","e"]]}
+];
+var cur=0;
+var $=function(i){return document.getElementById(i)};
+function tag(k){return k==="h"?'<span class="tag h">Dado histórico</span>':'<span class="tag e">Estimativa</span>'}
+
+function buildTrack(){
+  var tr=$("track"),min=1940,max=2000,html="";
+  G.forEach(function(g,i){
+    var p=6+((g.s-min)/(max-min))*88;
+    html+='<button class="mk" style="left:'+p+'%" data-i="'+i+'" aria-pressed="'+(i===cur)+'"><span class="dot"></span><b>'+g.n+'</b><span class="y">'+g.y+'</span></button>';
+  });
+  tr.innerHTML=html;
+  tr.querySelectorAll(".mk").forEach(function(b){b.onclick=function(){go(+b.dataset.i)}});
+}
+function go(i){cur=Math.max(0,Math.min(G.length-1,i));render()}
+function render(){
+  var g=G[cur];
+  document.querySelectorAll(".mk").forEach(function(b){b.setAttribute("aria-pressed",String(+b.dataset.i===cur))});
+  var rows="";
+  L.forEach(function(l,k){rows+="<dt>"+l+"</dt><dd>"+g.f[k][0]+" "+tag(g.f[k][1])+"</dd>"});
+  $("card").innerHTML="<h2>"+g.n+": "+g.t+"</h2><p class=\"sub\">"+g.y+" · exemplo: "+g.m+"</p><dl>"+rows+"</dl>";
+  $("prev").disabled=cur===0;$("next").disabled=cur===G.length-1;
+}
+function fillSel(){
+  ["selA","selB"].forEach(function(id,n){
+    var s=$(id);
+    G.forEach(function(g,i){var o=document.createElement("option");o.value=i;o.textContent=g.n+" ("+g.t+")";s.appendChild(o)});
+    s.value=n===0?0:G.length-1;s.onchange=cmp;
+  });
+  cmp();
+}
+function cmp(){
+  var a=G[+$("selA").value],b=G[+$("selB").value];
+  var h="<thead><tr><th></th><th>"+a.n+"</th><th>"+b.n+"</th></tr></thead><tbody>";
+  h+="<tr><th>Exemplo</th><td>"+a.m+"</td><td>"+b.m+"</td></tr>";
+  L.forEach(function(l,k){h+="<tr><th>"+l+"</th><td>"+a.f[k][0]+" "+tag(a.f[k][1])+"</td><td>"+b.f[k][0]+" "+tag(b.f[k][1])+"</td></tr>"});
+  $("tbl").innerHTML=h+"</tbody>";
+}
+function tab(n){
+  $("explore").hidden=n!==1;$("compare").hidden=n!==2;
+  $("t1").setAttribute("aria-selected",String(n===1));$("t2").setAttribute("aria-selected",String(n===2));
+}
+$("t1").onclick=function(){tab(1)};$("t2").onclick=function(){tab(2)};
+$("prev").onclick=function(){go(cur-1)};$("next").onclick=function(){go(cur+1)};
+buildTrack();render();fillSel();
+</script>
+</body>
+</html>
